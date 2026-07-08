@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lanaverse: Portal Fansite & Game Interaktif Lana JKT48</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Koleksi foto rare Lana JKT48, mainkan game clicker seru, gacha 3 kotak misteri, dan bayar kas fansite untuk mendapatkan akses VIP premium.">
+    <meta name="keywords" content="Lana JKT48, Aurhel Alana, JKT48, Fansite Lana, Lana Clicker, Gacha Lana, Kas JKT48">
+    <meta name="author" content="Lanaverse Team">
+    
+    <!-- OpenGraph Meta Tags -->
+    <meta property="og:title" content="Lanaverse: Portal Fansite & Game Interaktif Lana JKT48">
+    <meta property="og:description" content="Mainkan game clicker, kumpulkan foto rare Lana, gacha 3 kotak, dan dapatkan akses premium VIP.">
+    <meta property="og:image" content="assets/lana_avatar.png">
+    <meta property="og:type" content="website">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+    <!-- App Container -->
+    <div id="app" class="app-container">
+        
+        <!-- ================= AUTH SECTION ================= -->
+        <section id="auth-section" class="auth-section">
+            <div class="auth-card">
+                <div class="auth-logo">
+                    <span class="logo-glow">LANAVERSE</span>
+                </div>
+                <h1 class="auth-title">Selamat Datang, Fans Lana JKT48!</h1>
+                <p class="auth-subtitle">Portal interaktif terpadu untuk game clicker, gacha kotak misteri, dan koleksi foto langka Lana.</p>
+                
+                <div class="auth-actions">
+                    <button id="btn-auto-register" class="btn btn-primary btn-glow">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                        Buat Akun Penggemar Instan
+                    </button>
+                    
+                    <div class="divider">
+                        <span>atau masuk manual</span>
+                    </div>
+                    
+                    <form id="login-form" class="login-form">
+                        <div class="form-group">
+                            <label for="login-username">Nama Pengguna (Username)</label>
+                            <input type="text" id="login-username" placeholder="Masukkan username Anda..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Kata Sandi (Password)</label>
+                            <input type="password" id="login-password" placeholder="Masukkan password Anda..." required>
+                        </div>
+                        <button type="submit" class="btn btn-secondary">Masuk Ke Portal</button>
+                    </form>
+                    
+                    <p id="auth-error-msg" class="error-text hidden">Username atau password salah!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= MAIN DASHBOARD ================= -->
+        <div id="dashboard-section" class="dashboard-section hidden">
+            
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-brand">
+                    <span class="logo-text">LANAVERSE</span>
+                    <span id="vip-badge" class="vip-badge hidden">VIP MEMBER</span>
+                </div>
+                
+                <div class="header-stats">
+                    <div class="stat-item" title="Koin Fans">
+                        <span class="stat-icon">🪙</span>
+                        <span id="header-coins" class="stat-value font-mono">0</span>
+                    </div>
+                    <div class="stat-item" title="Tiket Gacha">
+                        <span class="stat-icon">🎟️</span>
+                        <span id="header-tickets" class="stat-value font-mono">0</span>
+                    </div>
+                    <div class="user-profile-menu">
+                        <span id="header-username" class="username-text">LanaFans</span>
+                        <button id="btn-logout" class="btn-icon-only" title="Keluar">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Navigation Tabs -->
+            <nav class="dashboard-nav">
+                <button class="nav-tab active" data-target="tab-clicker">
+                    <span>🎮</span> Clicker Game
+                </button>
+                <button class="nav-tab" data-target="tab-gacha">
+                    <span>📦</span> Special Gacha
+                </button>
+                <button class="nav-tab" data-target="tab-kas">
+                    <span>💳</span> Bayar Kas
+                </button>
+                <button class="nav-tab" data-target="tab-gallery">
+                    <span>🖼️</span> Galeri Kartu
+                </button>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="dashboard-main">
+                
+                <!-- 1. CLICKER GAME TAB -->
+                <section id="tab-clicker" class="tab-content">
+                    <div class="clicker-layout">
+                        <!-- Clicker Container -->
+                        <div class="clicker-panel card">
+                            <h2 class="section-title">Kumpulkan Cinta untuk Lana</h2>
+                            <p class="section-subtitle">Klik foto Lana secepat mungkin untuk mendapatkan Koin Cinta!</p>
+                            
+                            <div class="clicker-display">
+                                <div id="click-effect-area" class="click-effect-area">
+                                    <div id="clicker-target" class="clicker-target-wrapper">
+                                        <img src="assets/lana_avatar.png" alt="Lana JKT48 Clicker Target" class="clicker-avatar">
+                                        <div class="clicker-shadow"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="clicker-stats-grid">
+                                <div class="click-stat">
+                                    <span class="stat-label">Total Koin</span>
+                                    <span id="clicker-coins" class="stat-value font-mono text-primary">0</span>
+                                </div>
+                                <div class="click-stat">
+                                    <span class="stat-label">Koin per Klik (CPC)</span>
+                                    <span id="clicker-cpc" class="stat-value font-mono">1</span>
+                                </div>
+                                <div class="click-stat">
+                                    <span class="stat-label">Koin per Detik (CPS)</span>
+                                    <span id="clicker-cps" class="stat-value font-mono">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upgrade Shop Container -->
+                        <div class="shop-panel card">
+                            <h2 class="section-title font-sans">Toko Peningkatan (Shop)</h2>
+                            <p class="section-subtitle">Gunakan koinmu untuk membeli barang pendukung fansite agar koin terkumpul lebih cepat.</p>
+                            
+                            <div class="upgrades-list">
+                                <!-- Upgrade item 1 -->
+                                <div class="upgrade-item" id="shop-lightstick">
+                                    <div class="upgrade-details">
+                                        <div class="upgrade-icon">💡</div>
+                                        <div>
+                                            <h3 class="upgrade-name">Lana Lightstick</h3>
+                                            <p class="upgrade-desc">Menambah kekuatan klik (+1 Koin per Klik)</p>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-shop font-mono" onclick="buyUpgrade('lightstick')">
+                                        <span class="upgrade-cost">50</span> 🪙
+                                    </button>
+                                </div>
+
+                                <!-- Upgrade item 2 -->
+                                <div class="upgrade-item" id="shop-camera">
+                                    <div class="upgrade-details">
+                                        <div class="upgrade-icon">📷</div>
+                                        <div>
+                                            <h3 class="upgrade-name">Lensa Kamera Tele</h3>
+                                            <p class="upgrade-desc">Kualitas foto fansite meningkat (+5 Koin per Klik)</p>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-shop font-mono" onclick="buyUpgrade('camera')">
+                                        <span class="upgrade-cost">250</span> 🪙
+                                    </button>
+                                </div>
+
+                                <!-- Upgrade item 3 -->
+                                <div class="upgrade-item" id="shop-banner">
+                                    <div class="upgrade-details">
+                                        <div class="upgrade-icon">🏁</div>
+                                        <div>
+                                            <h3 class="upgrade-name">Spanduk Fansite</h3>
+                                            <p class="upgrade-desc">Dukungan luar biasa (+20 Koin per Klik)</p>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-shop font-mono" onclick="buyUpgrade('banner')">
+                                        <span class="upgrade-cost">1000</span> 🪙
+                                    </button>
+                                </div>
+
+                                <!-- Upgrade item 4 -->
+                                <div class="upgrade-item" id="shop-cheer">
+                                    <div class="upgrade-details">
+                                        <div class="upgrade-icon">📣</div>
+                                        <div>
+                                            <h3 class="upgrade-name">Sorakan Theater</h3>
+                                            <p class="upgrade-desc">Sorakan rutin fans menghasilkan koin (+2 Koin per Detik)</p>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-shop font-mono" onclick="buyUpgrade('cheer')">
+                                        <span class="upgrade-cost">200</span> 🪙
+                                    </button>
+                                </div>
+
+                                <!-- Upgrade item 5 -->
+                                <div class="upgrade-item" id="shop-mascot">
+                                    <div class="upgrade-details">
+                                        <div class="upgrade-icon">🦊</div>
+                                        <div>
+                                            <h3 class="upgrade-name">Maskot Fansite</h3>
+                                            <p class="upgrade-desc">Maskot lucu menggalang koin pasif (+10 Koin per Detik)</p>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-shop font-mono" onclick="buyUpgrade('mascot')">
+                                        <span class="upgrade-cost">800</span> 🪙
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. SPECIAL GACHA TAB -->
+                <section id="tab-gacha" class="tab-content hidden">
+                    <div class="gacha-container card">
+                        <h2 class="section-title">Special Gacha Lana JKT48</h2>
+                        <p class="section-subtitle">Gunakan Tiket Gacha untuk membuka salah satu dari 3 kotak misteri dan dapatkan foto rare!</p>
+                        
+                        <div class="tickets-display">
+                            <span>Sisa Tiket Gacha Anda:</span>
+                            <span id="gacha-tickets-count" class="font-mono text-highlight">0</span>
+                            <span>🎟️</span>
+                        </div>
+                        
+                        <div class="gacha-chests-grid">
+                            <!-- Chest 1 -->
+                            <div class="gacha-chest-wrapper" id="chest-1">
+                                <div class="chest-box chest-lavender">
+                                    <div class="chest-lid"></div>
+                                    <div class="chest-body"></div>
+                                    <div class="chest-glow"></div>
+                                </div>
+                                <button class="btn btn-gacha" onclick="openGacha(1)">Buka Kotak Ungu</button>
+                            </div>
+
+                            <!-- Chest 2 -->
+                            <div class="gacha-chest-wrapper" id="chest-2">
+                                <div class="chest-box chest-gold">
+                                    <div class="chest-lid"></div>
+                                    <div class="chest-body"></div>
+                                    <div class="chest-glow"></div>
+                                </div>
+                                <button class="btn btn-gacha btn-gold" onclick="openGacha(2)">Buka Kotak Emas</button>
+                            </div>
+
+                            <!-- Chest 3 -->
+                            <div class="gacha-chest-wrapper" id="chest-3">
+                                <div class="chest-box chest-pink">
+                                    <div class="chest-lid"></div>
+                                    <div class="chest-body"></div>
+                                    <div class="chest-glow"></div>
+                                </div>
+                                <button class="btn btn-gacha btn-pink" onclick="openGacha(3)">Buka Kotak Pink</button>
+                            </div>
+                        </div>
+
+                        <div class="gacha-info">
+                            <p class="info-title">Peluang Rarity Gacha:</p>
+                            <ul class="info-list">
+                                <li>🟩 <strong>Common Card:</strong> 60%</li>
+                                <li>🟦 <strong>Rare Card:</strong> 30%</li>
+                                <li>🟨 <strong>Ultra Rare Card:</strong> 10%</li>
+                            </ul>
+                            <p class="info-note">Dapatkan tiket gacha tambahan dari milestone klik di Game Clicker atau dari berlangganan **Bayar Kas Bulanan**.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. BAYAR KAS TAB -->
+                <section id="tab-kas" class="tab-content hidden">
+                    <div class="kas-layout">
+                        <!-- Payment details -->
+                        <div class="kas-info-panel card">
+                            <h2 class="section-title">Iuran Kas Bulanan Fansite</h2>
+                            <p class="section-subtitle">Tingkatkan akun menjadi <strong>VIP PREMIUM</strong> untuk membuka keuntungan ganda.</p>
+                            
+                            <div class="vip-benefits">
+                                <h3>Keuntungan VIP Member:</h3>
+                                <ul class="benefits-list">
+                                    <li>🎁 <strong>10x Tiket Gacha</strong> langsung secara gratis.</li>
+                                    <li>⚡ <strong>Multiplier Koin Clicker 2x Lipat</strong> selamanya (Setiap klik menghasilkan 2x lipat koin).</li>
+                                    <li>🔑 Membuka akses instan ke <strong>Kartu Foto VIP Bulanan Eksklusif</strong> di Galeri.</li>
+                                    <li>🌟 Badge VIP berwarna emas mengkilap di dashboard Anda.</li>
+                                </ul>
+                            </div>
+
+                            <div class="qris-simulator">
+                                <h3>Simulasi QRIS Pembayaran</h3>
+                                <p class="qris-sub">Pindai kode QR di bawah ini (Simulasi tanpa uang sungguhan):</p>
+                                
+                                <div class="qris-code-container">
+                                    <!-- Embedded Beautiful SVG QRIS Code -->
+                                    <svg class="qris-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                        <!-- Outer Border -->
+                                        <rect x="5" y="5" width="190" height="190" rx="10" fill="#fff" stroke="#1c1833" stroke-width="6"/>
+                                        <!-- Header Text -->
+                                        <rect x="5" y="5" width="190" height="30" rx="4" fill="#002D62"/>
+                                        <text x="100" y="24" fill="#fff" font-family="'Outfit', sans-serif" font-size="12" font-weight="bold" text-anchor="middle">QRIS - LANAVERSE KAS</text>
+                                        
+                                        <!-- QR Grid Pattern simulated -->
+                                        <!-- Top Left Finder Pattern -->
+                                        <rect x="25" y="45" width="35" height="35" fill="#1c1833" stroke="#fff" stroke-width="4"/>
+                                        <rect x="32" y="52" width="21" height="21" fill="#fff"/>
+                                        <rect x="37" y="57" width="11" height="11" fill="#1c1833"/>
+                                        
+                                        <!-- Top Right Finder Pattern -->
+                                        <rect x="140" y="45" width="35" height="35" fill="#1c1833" stroke="#fff" stroke-width="4"/>
+                                        <rect x="147" y="52" width="21" height="21" fill="#fff"/>
+                                        <rect x="152" y="57" width="11" height="11" fill="#1c1833"/>
+
+                                        <!-- Bottom Left Finder Pattern -->
+                                        <rect x="25" y="140" width="35" height="35" fill="#1c1833" stroke="#fff" stroke-width="4"/>
+                                        <rect x="32" y="147" width="21" height="21" fill="#fff"/>
+                                        <rect x="37" y="152" width="11" height="11" fill="#1c1833"/>
+
+                                        <!-- Center Logo Mock -->
+                                        <rect x="85" y="90" width="30" height="30" rx="6" fill="#FF1493"/>
+                                        <text x="100" y="110" fill="#fff" font-family="'Outfit', sans-serif" font-size="16" font-weight="bold" text-anchor="middle">L48</text>
+
+                                        <!-- Fake Data QR bits -->
+                                        <rect x="70" y="45" width="8" height="8" fill="#1c1833"/>
+                                        <rect x="90" y="45" width="16" height="8" fill="#1c1833"/>
+                                        <rect x="120" y="45" width="8" height="16" fill="#1c1833"/>
+                                        
+                                        <rect x="70" y="65" width="24" height="8" fill="#1c1833"/>
+                                        <rect x="100" y="65" width="8" height="8" fill="#1c1833"/>
+                                        
+                                        <rect x="25" y="95" width="16" height="8" fill="#1c1833"/>
+                                        <rect x="50" y="95" width="8" height="16" fill="#1c1833"/>
+                                        
+                                        <rect x="140" y="95" width="8" height="8" fill="#1c1833"/>
+                                        <rect x="155" y="95" width="20" height="8" fill="#1c1833"/>
+
+                                        <rect x="70" y="130" width="8" height="20" fill="#1c1833"/>
+                                        <rect x="90" y="140" width="30" height="8" fill="#1c1833"/>
+                                        <rect x="130" y="130" width="8" height="8" fill="#1c1833"/>
+                                        <rect x="145" y="145" width="16" height="16" fill="#1c1833"/>
+
+                                        <rect x="100" y="160" width="25" height="8" fill="#1c1833"/>
+                                        <rect x="70" y="170" width="8" height="10" fill="#1c1833"/>
+                                    </svg>
+                                </div>
+                                <p class="qris-price">NOMINAL KAS VIRTUAL: <strong>Rp 15.000,-</strong></p>
+                            </div>
+                        </div>
+
+                        <!-- Form Submission -->
+                        <div class="kas-form-panel card">
+                            <h2 class="section-title">Konfirmasi Unggah Bukti Bayar</h2>
+                            <p class="section-subtitle">Simulasi pengiriman bukti transaksi GForm / GDrive Anda di sini untuk ditinjau oleh Admin.</p>
+                            
+                            <form id="payment-form" class="payment-form">
+                                <div class="upload-dropzone" id="upload-dropzone">
+                                    <input type="file" id="proof-file" accept="image/*" class="file-input">
+                                    <div class="dropzone-content">
+                                        <span class="upload-icon">📁</span>
+                                        <p class="upload-text">Tarik & lepas bukti pembayaran di sini atau <strong>Pilih File</strong></p>
+                                        <p class="upload-sub">Format file: JPG, PNG, atau screenshot HP</p>
+                                    </div>
+                                    <div id="file-preview-container" class="file-preview-container hidden">
+                                        <span id="preview-filename">bukti_transfer.png</span>
+                                        <button type="button" id="btn-remove-file" class="btn-remove">&times;</button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="sender-name">Nama Pengirim Rekening / E-Wallet</label>
+                                    <input type="text" id="sender-name" placeholder="Misal: Muhammad Jepri..." required>
+                                </div>
+
+                                <button type="submit" id="btn-submit-payment" class="btn btn-primary btn-block">Kirim Bukti Pembayaran</button>
+                            </form>
+
+                            <!-- Verification Modal/Overlay inside the card -->
+                            <div id="verification-overlay" class="verification-overlay hidden">
+                                <div class="verification-box">
+                                    <div class="pulse-loader"></div>
+                                    <h3 id="verif-title">Menghubungkan ke Admin...</h3>
+                                    <p id="verif-desc" class="font-mono">Meninjau kecocokan nominal bukti transfer dengan bank...</p>
+                                    <div class="progress-bar-container">
+                                        <div id="verif-progress" class="progress-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Success Overlay -->
+                            <div id="success-overlay" class="verification-overlay success-bg hidden">
+                                <div class="verification-box text-center">
+                                    <span class="success-check">🎉</span>
+                                    <h3>Pembayaran Kas Berhasil Disetujui!</h3>
+                                    <p>Selamat, akun Anda telah aktif sebagai <strong>VIP Member</strong>. Dapatkan multiplier klik 2x lipat dan 10 tiket gacha tambahan!</p>
+                                    <button id="btn-close-success" class="btn btn-primary">Kembali ke Dashboard</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. GALLERY TAB -->
+                <section id="tab-gallery" class="tab-content hidden">
+                    <div class="gallery-container card">
+                        <h2 class="section-title">Koleksi Album Foto Rare Lana JKT48</h2>
+                        <p class="section-subtitle">Dapatkan foto-foto ini melalui Gacha Kotak Misteri atau berlangganan Iuran Kas.</p>
+                        
+                        <div class="gallery-stats">
+                            <span>Koleksi Terkumpul:</span>
+                            <span id="gallery-ratio" class="font-mono text-highlight">0/6</span>
+                            <span>Kartu</span>
+                        </div>
+
+                        <!-- Bento grid for card collection -->
+                        <div class="gallery-grid">
+                            <!-- Card 1: Stage Performance -->
+                            <div class="gallery-card locked" id="card-1" data-id="1">
+                                <div class="card-inner">
+                                    <div class="card-front">
+                                        <img src="assets/lana_stage.png" alt="Lana Stage Perform" class="card-img">
+                                        <div class="card-tag tag-common">COMMON</div>
+                                        <div class="card-overlay-text">
+                                            <h4>Theater Stage Perform</h4>
+                                            <p>Aksi panggung energetik Lana</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-back">
+                                        <div class="lock-icon">🔒</div>
+                                        <p class="lock-instructions">Buka melalui Gacha Kotak</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Cozy Casual -->
+                            <div class="gallery-card locked" id="card-2" data-id="2">
+                                <div class="card-inner">
+                                    <div class="card-front">
+                                        <img src="assets/lana_casual.png" alt="Lana Cozy Casual" class="card-img">
+                                        <div class="card-tag tag-common">COMMON</div>
+                                        <div class="card-overlay-text">
+                                            <h4>Cozy Casual Cafe</h4>
+                                            <p>Waktu santai Lana di cafe favorit</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-back">
+                                        <div class="lock-icon">🔒</div>
+                                        <p class="lock-instructions">Buka melalui Gacha Kotak</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 3: School Uniform -->
+                            <div class="gallery-card locked" id="card-3" data-id="3">
+                                <div class="card-inner">
+                                    <div class="card-front">
+                                        <img src="assets/lana_seifuku.png" alt="Lana School Seifuku" class="card-img">
+                                        <div class="card-tag tag-common">COMMON</div>
+                                        <div class="card-overlay-text">
+                                            <h4>Seifuku School Uniform</h4>
+                                            <p>Senyuman manis Lana berseragam sekolah</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-back">
+                                        <div class="lock-icon">🔒</div>
+                                        <p class="lock-instructions">Buka melalui Gacha Kotak</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 4: Traditional Batik -->
+                            <div class="gallery-card locked" id="card-4" data-id="4">
+                                <div class="card-inner">
+                                    <div class="card-front">
+                                        <img src="assets/lana_traditional.png" alt="Lana Traditional Kebaya" class="card-img">
+                                        <div class="card-tag tag-rare">RARE</div>
+                                        <div class="card-overlay-text">
+                                            <h4>Batik Kebaya Traditional</h4>
+                                            <p>Keanggunan Lana dalam batik tradisional</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-back">
+                                        <div class="lock-icon">🔒</div>
+                                        <p class="lock-instructions">Buka melalui Gacha Kotak</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 5: Golden Princess -->
+                            <div class="gallery-card locked" id="card-5" data-id="5">
+                                <div class="card-inner">
+                                    <div class="card-front">
+                                        <img src="assets/lana_gold.png" alt="Lana Golden Princess" class="card-img">
+                                        <div class="card-tag tag-ultrarare">ULTRA RARE</div>
+                                        <div class="card-overlay-text">
+                                            <h4>Golden Princess Dress</h4>
+                                            <p>Gaun konser emas yang bersinar megah</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-back">
+                                        <div class="lock-icon">🔒</div>
+                                        <p class="lock-instructions">Buka melalui Gacha Kotak</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 6: VIP Monthly Exclusive -->
+                            <div class="gallery-card locked vip-exclusive-card" id="card-6" data-id="6">
+                                <div class="card-inner">
+                                    <div class="card-front">
+                                        <img src="assets/lana_stage.png" alt="Lana VIP Exclusive" class="card-img sepia-effect">
+                                        <div class="card-tag tag-vip">VIP EXCLUSIVE</div>
+                                        <div class="card-overlay-text">
+                                            <h4>Lana Exclusive Stage Shot</h4>
+                                            <p>Foto perform khusus anggota VIP Bulanan</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-back">
+                                        <div class="lock-icon">👑</div>
+                                        <p class="lock-instructions">Hanya untuk VIP Member Kas</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- ================= MODALS & NOTIFICATIONS ================= -->
+    
+    <!-- Gacha Reward Modal -->
+    <div id="gacha-reward-modal" class="modal-overlay hidden">
+        <div class="modal-content gacha-reward-content card">
+            <h2 class="gacha-title">SELAMAT! KOTAK BERHASIL DIBUKA</h2>
+            <p class="gacha-subtitle">Anda mendapatkan kartu berikut:</p>
+            
+            <div class="reward-card-container">
+                <!-- Glowing 3D Flip Card Container -->
+                <div class="reward-card flipped" id="reward-flip-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="lock-icon">🎁</div>
+                        </div>
+                        <div class="card-back">
+                            <img id="reward-img" src="assets/lana_stage.png" alt="Gacha Reward Lana" class="card-img">
+                            <div id="reward-tag" class="card-tag tag-common">COMMON</div>
+                            <div class="card-overlay-text">
+                                <h4 id="reward-title">Nama Kartu</h4>
+                                <p id="reward-desc">Deskripsi kartu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="btn-close-reward" class="btn btn-primary mt-6">Simpan ke Galeri</button>
+        </div>
+    </div>
+
+    <!-- Card Detail Modal (Gallery) -->
+    <div id="card-detail-modal" class="modal-overlay hidden">
+        <div class="modal-content detail-content card">
+            <button id="btn-close-detail" class="btn-close-modal">&times;</button>
+            <div class="detail-layout">
+                <div class="detail-image-wrapper">
+                    <img id="detail-img" src="" alt="Lana JKT48 Full Photocard" class="detail-img">
+                </div>
+                <div class="detail-info-wrapper">
+                    <span id="detail-tag" class="card-tag tag-common">COMMON</span>
+                    <h2 id="detail-title" class="detail-title">Judul Foto</h2>
+                    <p id="detail-desc" class="detail-desc">Deskripsi detail mengenai momen foto Lana JKT48 ini.</p>
+                    
+                    <div class="detail-stats font-mono">
+                        <div class="detail-stat-row">
+                            <span>ID Kartu:</span>
+                            <span id="detail-card-id">#01</span>
+                        </div>
+                        <div class="detail-stat-row">
+                            <span>Rarity Drop:</span>
+                            <span id="detail-rarity-rate">60%</span>
+                        </div>
+                    </div>
+                    
+                    <a id="btn-download-card" href="#" download class="btn btn-primary btn-block text-center mt-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Unduh Kartu Foto (High-Res)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- JS Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>
