@@ -2,6 +2,23 @@
    LANAVERSE INTERACTIVE GAME & PORTAL LOGIC
    ========================================================================== */
 
+// 0. SITE CONFIGURATION — GANTI NILAI DI BAWAH DENGAN DATA ASLI FANSITE ANDA
+const SITE_CONFIG = {
+    // Link Google Form asli tempat fans mengunggah bukti transfer.
+    // Hubungkan Google Form ini ke Google Sheet + folder Google Drive
+    // (lewat pertanyaan tipe "File upload") agar bukti otomatis tersimpan di Drive Anda.
+    GFORM_URL: "https://forms.gle/GANTI_DENGAN_LINK_GOOGLE_FORM_ANDA",
+
+    // Path gambar QRIS/QR pembayaran asli (taruh file di folder assets/).
+    QRIS_IMAGE: "assets/qris_real.png",
+
+    // Nominal kas yang ditampilkan di halaman pembayaran.
+    KAS_NOMINAL: "Rp 15.000,-",
+
+    // Nama rekening/e-wallet tujuan yang ditampilkan sebagai info transfer manual.
+    PAYMENT_TARGET_NAME: "Admin Lanaverse Fansite"
+};
+
 // 1. CARDS DATA DEFINITIONS
 const PHOTO_CARDS = [
     {
@@ -100,7 +117,10 @@ function initAuth() {
     const btnAutoRegister = document.getElementById("btn-auto-register");
     const loginForm = document.getElementById("login-form");
     const btnLogout = document.getElementById("btn-logout");
-    
+
+    // Seed akun uji coba (khusus testing lokal, hapus baris ini saat go-live)
+    seedTestAccount("atmin", "atmin");
+
     // Check session
     const sessionUser = sessionStorage.getItem("lanaverse_user");
     if (sessionUser) {
@@ -108,10 +128,10 @@ function initAuth() {
     }
 
     btnAutoRegister.addEventListener("click", () => {
-        // Auto register 1 member, 1 account automatically
+        // Auto register 1 member, 1 akun otomatis dengan kredensial unik
         const randId = Math.floor(1000 + Math.random() * 9000);
         const username = `LanaFans_${randId}`;
-        const password = "password"; // Default simplified password
+        const password = generateRandomPassword();
 
         // Register in local database
         let accounts = JSON.parse(localStorage.getItem("lanaverse_accounts") || "[]");
@@ -132,8 +152,9 @@ function initAuth() {
         };
         localStorage.setItem(`lanaverse_state_${username}`, JSON.stringify(initialState));
 
-        showToast(`Akun ${username} berhasil dibuat otomatis!`, "success");
-        loginUser(username);
+        // Tampilkan kredensial ke user SEBELUM masuk, karena tidak ada cara
+        // pemulihan akun (semua data hanya tersimpan di browser ini).
+        showCredentialsModal(username, password);
     });
 
     loginForm.addEventListener("submit", (e) => {
@@ -163,6 +184,68 @@ function initAuth() {
         loginForm.reset();
         showToast("Anda telah keluar dari portal.", "info");
     });
+}
+
+// Generate password acak sederhana (huruf+angka) untuk akun auto-register
+function generateRandomPassword() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+    let pass = "";
+    for (let i = 0; i < 8; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return pass;
+}
+
+// Tampilkan modal berisi username & password hasil auto-register
+// supaya fans bisa menyimpannya (login manual di lain waktu/device).
+function showCredentialsModal(username, password) {
+    const modal = document.getElementById("credentials-modal");
+    document.getElementById("cred-username").textContent = username;
+    document.getElementById("cred-password").textContent = password;
+    modal.classList.remove("hidden");
+
+    document.getElementById("btn-copy-credentials").onclick = () => {
+        const text = `Username: ${username}\nPassword: ${password}`;
+        navigator.clipboard.writeText(text).then(() => {
+            showToast("Kredensial disalin ke clipboard!", "success");
+        }).catch(() => {
+            showToast("Gagal menyalin otomatis, silakan catat manual.", "error");
+        });
+    };
+
+    document.getElementById("btn-continue-credentials").onclick = () => {
+        modal.classList.add("hidden");
+        showToast(`Akun ${username} berhasil dibuat otomatis!`, "success");
+        loginUser(username);
+    };
+}
+
+// Buat akun uji coba lokal jika belum ada, dengan saldo & tiket berlimpah
+// supaya memudahkan testing semua fitur (klik, gacha, kas, galeri).
+function seedTestAccount(username, password) {
+    let accounts = JSON.parse(localStorage.getItem("lanaverse_accounts") || "[]");
+    const exists = accounts.find(acc => acc.username === username);
+
+    if (!exists) {
+        accounts.push({ username, password });
+        localStorage.setItem("lanaverse_accounts", JSON.stringify(accounts));
+    }
+
+    // Hanya inisialisasi state kalau akun ini belum pernah punya progress
+    if (!localStorage.getItem(`lanaverse_state_${username}`)) {
+        const testState = {
+            currentUser: username,
+            coins: 999999,
+            tickets: 50,
+            clicks: 0,
+            cpc: 10,
+            cps: 5,
+            isVip: true,
+            upgrades: { lightstick: 3, camera: 2, banner: 1, cheer: 2, mascot: 1 },
+            unlockedCards: [1, 2, 3, 4, 5, 6]
+        };
+        localStorage.setItem(`lanaverse_state_${username}`, JSON.stringify(testState));
+    }
 }
 
 function loginUser(username) {
@@ -258,6 +341,92 @@ function initClicker() {
         updateUI();
         saveState();
     });
+
+    // Mulai siklus kemunculan gimmick "Lana Langka"
+    scheduleRareSpawn();
+}
+
+// 6b. GIMMICK "TANGKAP LANA LANGKA" (ala encounter Pokémon liar)
+// Secara acak, sesosok "Lana Langka" berkilau muncul sebentar di area klik.
+// Fans harus mengetuknya cepat sebelum menghilang untuk dapat bonus besar.
+let rareSpawnTimer = null;
+
+function scheduleRareSpawn() {
+    clearTimeout(rareSpawnTimer);
+    // Muncul acak setiap 25-55 detik
+    const delay = 25000 + Math.random() * 30000;
+    rareSpawnTimer = setTimeout(spawnRareLana, delay);
+}
+
+function spawnRareLana() {
+    // Jangan spawn kalau user sedang tidak di tab clicker / belum login
+    const clickerTab = document.getElementById("tab-clicker");
+    if (!state.currentUser || clickerTab.classList.contains("hidden")) {
+        scheduleRareSpawn();
+        return;
+    }
+
+    const clickArea = document.getElementById("click-effect-area");
+    const rect = clickArea.getBoundingClientRect();
+
+    const spawn = document.createElement("div");
+    spawn.className = "rare-spawn";
+    spawn.innerHTML = `
+        <img src="assets/lana_stage.png" alt="Lana Langka Muncul!" class="rare-spawn-img">
+        <span class="rare-spawn-label">✨ Lana Langka! Tangkap!</span>
+    `;
+
+    // Posisi acak di dalam area klik (dengan margin agar tidak terpotong)
+    const maxX = Math.max(rect.width - 90, 20);
+    const maxY = Math.max(rect.height - 90, 20);
+    spawn.style.left = `${20 + Math.random() * maxX}px`;
+    spawn.style.top = `${20 + Math.random() * maxY}px`;
+
+    let caught = false;
+    const lifeTime = 4000; // 4 detik untuk menangkap sebelum hilang
+
+    spawn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (caught) return;
+        caught = true;
+        catchRareLana(spawn);
+    });
+
+    clickArea.appendChild(spawn);
+
+    setTimeout(() => {
+        if (!caught && spawn.parentElement) {
+            spawn.classList.add("rare-spawn-missed");
+            setTimeout(() => spawn.remove(), 400);
+            showToast("Yah, momen langka Lana keburu pergi! Coba lagi nanti~", "info");
+        }
+    }, lifeTime);
+
+    // Jadwalkan kemunculan berikutnya
+    scheduleRareSpawn();
+}
+
+function catchRareLana(spawnEl) {
+    const bonusCoins = Math.max(50, state.cpc * 15);
+    state.coins += bonusCoins;
+    state.tickets += 1;
+
+    // 20% peluang langsung dapat 1 kartu foto acak yang belum terbuka
+    let bonusCardMsg = "";
+    const locked = PHOTO_CARDS.filter(c => c.id !== 6 && !state.unlockedCards.includes(c.id));
+    if (locked.length > 0 && Math.random() < 0.2) {
+        const bonusCard = locked[Math.floor(Math.random() * locked.length)];
+        state.unlockedCards.push(bonusCard.id);
+        bonusCardMsg = ` Bonus kartu "${bonusCard.title}" langsung masuk galeri!`;
+    }
+
+    saveState();
+    updateUI();
+
+    spawnEl.classList.add("rare-spawn-caught");
+    setTimeout(() => spawnEl.remove(), 400);
+
+    showToast(`Berhasil menangkap Lana Langka! +${bonusCoins} koin & +1 tiket gacha.${bonusCardMsg}`, "success");
 }
 
 function createFloatingParticle(e, clickVal) {
@@ -348,13 +517,25 @@ function initPayment() {
     const previewContainer = document.getElementById("file-preview-container");
     const previewFilename = document.getElementById("preview-filename");
     const btnRemoveFile = document.getElementById("btn-remove-file");
-    
+    const gformCheckbox = document.getElementById("gform-confirm-checkbox");
+    const btnOpenGform = document.getElementById("btn-open-gform");
+
     const verifOverlay = document.getElementById("verification-overlay");
     const verifTitle = document.getElementById("verif-title");
     const verifDesc = document.getElementById("verif-desc");
     const verifProgress = document.getElementById("verif-progress");
     const successOverlay = document.getElementById("success-overlay");
     const btnCloseSuccess = document.getElementById("btn-close-success");
+
+    // Isi gambar QRIS & link Google Form dari konfigurasi situs
+    const qrisImg = document.getElementById("qris-image");
+    if (qrisImg) qrisImg.src = SITE_CONFIG.QRIS_IMAGE;
+    document.getElementById("qris-nominal-label").textContent = SITE_CONFIG.KAS_NOMINAL;
+    document.getElementById("qris-target-label").textContent = SITE_CONFIG.PAYMENT_TARGET_NAME;
+
+    btnOpenGform.addEventListener("click", () => {
+        window.open(SITE_CONFIG.GFORM_URL, "_blank", "noopener");
+    });
 
     // File input selection event
     fileInput.addEventListener("change", (e) => {
@@ -405,9 +586,14 @@ function initPayment() {
     // Submit payment form
     paymentForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        
+
         if (!fileInput.files || fileInput.files.length === 0) {
-            showToast("Harap unggah berkas bukti pembayaran kas!", "error");
+            showToast("Harap pilih berkas bukti pembayaran kas (untuk arsip lokal Anda)!", "error");
+            return;
+        }
+
+        if (!gformCheckbox.checked) {
+            showToast("Harap konfirmasi bahwa Anda sudah mengirim bukti transfer lewat Google Form Admin!", "error");
             return;
         }
 
@@ -417,11 +603,16 @@ function initPayment() {
     });
 
     function simulateVerification() {
+        // Catatan kejujuran: situs statis ini tidak punya server, sehingga tidak bisa
+        // benar-benar mengecek mutasi bank/e-wallet. Status "VIP" di bawah aktif secara
+        // LOKAL di perangkat ini sebagai preview instan begitu Anda mengonfirmasi sudah
+        // mengirim bukti lewat Google Form. Persetujuan final tetap ada di tangan Admin
+        // yang meninjau isian Google Form / folder Google Drive Anda.
         const steps = [
-            { time: 0, title: "Mengunggah bukti...", desc: "Mentransfer berkas ke server fansite JKT48..." },
-            { time: 800, title: "Memverifikasi nominal...", desc: "Mencocokkan jumlah transfer kas Rp 15.000,-" },
-            { time: 1600, title: "Menghubungkan ke bank...", desc: "Melakukan kliring bukti bayar otomatis..." },
-            { time: 2400, title: "Menyetujui transaksi...", desc: "Admin mengonfirmasi status keanggotaan..." }
+            { time: 0, title: "Menyiapkan permintaan...", desc: "Mencatat data pengajuan kas Anda di perangkat ini..." },
+            { time: 800, title: "Mengecek kelengkapan...", desc: `Nominal kas: ${SITE_CONFIG.KAS_NOMINAL}` },
+            { time: 1600, title: "Menunggu tinjauan Admin...", desc: "Bukti Anda akan ditinjau lewat Google Form/Drive..." },
+            { time: 2400, title: "Mengaktifkan preview VIP...", desc: "Status final tetap menunggu konfirmasi Admin." }
         ];
 
         let progress = 0;
@@ -474,7 +665,8 @@ function initPayment() {
         paymentForm.reset();
         previewContainer.classList.add("hidden");
         document.querySelector(".dropzone-content").classList.remove("hidden");
-        
+        gformCheckbox.checked = false;
+
         // Redirect user to Clicker tab
         document.querySelector("[data-target='tab-clicker']").click();
     });
@@ -492,16 +684,40 @@ function initGacha() {
         // Redirect to gallery to show collection
         document.querySelector("[data-target='tab-gallery']").click();
     });
+
+    // Tampilkan harga tiket & ringkasan peluang di tiap kotak
+    Object.entries(GACHA_BOXES).forEach(([idx, box]) => {
+        const costLabel = document.getElementById(`chest-${idx}-cost`);
+        const oddsLabel = document.getElementById(`chest-${idx}-odds`);
+        if (costLabel) costLabel.textContent = `${box.cost} 🎟️`;
+        if (oddsLabel) {
+            const parts = Object.entries(box.odds)
+                .filter(([, chance]) => chance > 0)
+                .map(([rarity, chance]) => `${rarity} ${Math.round(chance * 100)}%`);
+            oddsLabel.textContent = parts.join(" · ");
+        }
+    });
 }
 
+// Definisi 3 kotak gacha — masing-masing punya harga tiket & peluang berbeda
+// supaya memilih kotak jadi keputusan strategis, bukan sekadar kosmetik.
+const GACHA_BOXES = {
+    1: { name: "Kotak Ungu", cost: 1, odds: { COMMON: 0.6, RARE: 0.3, "ULTRA RARE": 0.1 } },
+    2: { name: "Kotak Emas", cost: 3, odds: { COMMON: 0.2, RARE: 0.5, "ULTRA RARE": 0.3 } },
+    3: { name: "Kotak Pink", cost: 2, odds: { COMMON: 0, RARE: 0.7, "ULTRA RARE": 0.3 } }
+};
+
 window.openGacha = function(boxIndex) {
-    if (state.tickets <= 0) {
-        showToast("Tiket gacha Anda habis! Silakan dapatkan koin/kas untuk menambah tiket.", "error");
+    const boxConfig = GACHA_BOXES[boxIndex];
+    if (!boxConfig) return;
+
+    if (state.tickets < boxConfig.cost) {
+        showToast(`Tiket tidak cukup! ${boxConfig.name} butuh ${boxConfig.cost} tiket gacha.`, "error");
         return;
     }
 
-    // Deduct ticket
-    state.tickets -= 1;
+    // Deduct ticket sesuai harga kotak yang dipilih
+    state.tickets -= boxConfig.cost;
     updateUI();
     saveState();
 
@@ -512,25 +728,29 @@ window.openGacha = function(boxIndex) {
     // After shaking for 1.2s, reveal the reward
     setTimeout(() => {
         chest.classList.remove("shake");
-        rollCardReward();
+        rollCardReward(boxConfig);
     }, 1200);
 };
 
-function rollCardReward() {
-    // Drop logic: Common (60%), Rare (30%), Ultra Rare (10%)
+function rollCardReward(boxConfig) {
+    // Drop logic ditentukan oleh odds kotak yang dipilih pemain
     const rand = Math.random();
     let raritySelected = "COMMON";
-    
-    if (rand < 0.6) {
-        raritySelected = "COMMON";
-    } else if (rand < 0.9) {
-        raritySelected = "RARE";
-    } else {
-        raritySelected = "ULTRA RARE";
+    let cumulative = 0;
+
+    for (const [rarity, chance] of Object.entries(boxConfig.odds)) {
+        cumulative += chance;
+        if (rand < cumulative) {
+            raritySelected = rarity;
+            break;
+        }
     }
 
     // Select candidate cards from available options
-    const candidates = PHOTO_CARDS.filter(c => c.rarity === raritySelected && c.id !== 6);
+    let candidates = PHOTO_CARDS.filter(c => c.rarity === raritySelected && c.id !== 6);
+    if (candidates.length === 0) {
+        candidates = PHOTO_CARDS.filter(c => c.id !== 6);
+    }
     // Pick random candidate
     const selectedCard = candidates[Math.floor(Math.random() * candidates.length)];
 

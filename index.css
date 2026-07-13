@@ -675,6 +675,66 @@ body {
     animation: particle-float 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
+/* "Tangkap Lana Langka" gimmick spawn (ala encounter Pokémon liar) */
+.rare-spawn {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    z-index: 150;
+    cursor: pointer;
+    text-align: center;
+    animation: rare-spawn-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+               rare-spawn-bob 1.4s ease-in-out infinite 0.4s;
+}
+
+.rare-spawn-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid hsl(var(--color-gold));
+    box-shadow: 0 0 20px 4px hsl(var(--color-gold) / 0.7);
+}
+
+.rare-spawn-label {
+    position: absolute;
+    top: -1.6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: hsl(var(--color-gold));
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    pointer-events: none;
+}
+
+.rare-spawn-caught {
+    animation: rare-spawn-caught 0.4s ease forwards !important;
+}
+
+.rare-spawn-missed {
+    animation: rare-spawn-missed 0.4s ease forwards !important;
+}
+
+@keyframes rare-spawn-pop {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes rare-spawn-bob {
+    0%, 100% { margin-top: 0px; }
+    50% { margin-top: -8px; }
+}
+
+@keyframes rare-spawn-caught {
+    to { transform: scale(1.4); opacity: 0; }
+}
+
+@keyframes rare-spawn-missed {
+    to { transform: scale(0.6) translateY(20px); opacity: 0; }
+}
+
 /* ==========================================================================
    2. TAB: GACHA DESIGN
    ========================================================================== */
@@ -725,7 +785,44 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.25rem;
+    gap: 0.35rem;
+}
+
+.chest-name {
+    font-weight: 700;
+    margin-top: 0.75rem;
+}
+
+.chest-cost {
+    font-size: 0.8rem;
+    color: hsl(var(--color-gold));
+}
+
+.chest-odds {
+    font-size: 0.7rem;
+    color: hsl(var(--color-text-secondary));
+    margin-bottom: 0.75rem;
+    min-height: 1em;
+}
+
+/* Checkbox row used in payment confirmation form */
+.checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    color: hsl(var(--color-text-secondary));
+    margin: 0.75rem 0 1.25rem;
+    cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"] {
+    margin-top: 0.2rem;
+    width: 16px;
+    height: 16px;
+    accent-color: hsl(var(--color-secondary));
+    flex-shrink: 0;
+    cursor: pointer;
 }
 
 .btn-gacha {
@@ -957,6 +1054,8 @@ body {
 .qris-svg {
     width: 100%;
     height: 100%;
+    object-fit: contain;
+    display: block;
 }
 
 .qris-price {
@@ -1123,6 +1222,7 @@ body {
 }
 
 .mt-6 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 1rem; }
 
 /* ==========================================================================
    4. TAB: GALLERY DESIGN
