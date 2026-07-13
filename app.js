@@ -5,9 +5,23 @@
 // 0. SITE CONFIGURATION — GANTI NILAI DI BAWAH DENGAN DATA ASLI FANSITE ANDA
 const SITE_CONFIG = {
     // Link Google Form asli tempat fans mengunggah bukti transfer.
-    // Hubungkan Google Form ini ke Google Sheet + folder Google Drive
-    // (lewat pertanyaan tipe "File upload") agar bukti otomatis tersimpan di Drive Anda.
     GFORM_URL: "https://forms.gle/GANTI_DENGAN_LINK_GOOGLE_FORM_ANDA",
+
+    // URL Web App Google Apps Script untuk mengirim bukti transfer ke Google Spreadsheet otomatis.
+    // Petunjuk Setup Spreadsheet Otomatis:
+    // 1. Buat Google Spreadsheet baru.
+    // 2. Klik Ekstensi -> Apps Script.
+    // 3. Tulis kode berikut di editor Apps Script:
+    //    function doPost(e) {
+    //      var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    //      var data = JSON.parse(e.postData.contents);
+    //      sheet.appendRow([data.timestamp, data.username, data.senderName, data.nominal, data.fileName]);
+    //      return ContentService.createTextOutput("Success");
+    //    }
+    // 4. Klik Deploy -> Deployment Baru -> Pilih Tipe: Aplikasi Web.
+    // 5. Ubah 'Akses' menjadi 'Siapa saja' (Anyone) agar web static bisa mengirim data.
+    // 6. Klik Deploy, setujui izin, lalu salin URL Aplikasi Web yang diberikan. Tempel ke bawah ini:
+    SPREADSHEET_WEBAPP_URL: "https://script.google.com/macros/s/GANTI_DENGAN_URL_WEB_APP_APPS_SCRIPT_ANDA/exec",
 
     // Path gambar QRIS/QR pembayaran asli (taruh file di folder assets/).
     QRIS_IMAGE: "assets/qris_real.png",
@@ -85,6 +99,7 @@ let state = {
     currentUser: null,
     coins: 0,
     tickets: 0,
+    tokens: 0, // Token download foto rare
     clicks: 0,
     cpc: 1,
     cps: 0,
@@ -143,6 +158,7 @@ function initAuth() {
             currentUser: username,
             coins: 10, // Small starting bonus
             tickets: 1, // Start with 1 free ticket
+            tokens: 0, // 0 download tokens
             clicks: 0,
             cpc: 1,
             cps: 0,
@@ -237,6 +253,7 @@ function seedTestAccount(username, password) {
             currentUser: username,
             coins: 999999,
             tickets: 50,
+            tokens: 15, // Test account starts with 15 tokens
             clicks: 0,
             cpc: 10,
             cps: 5,
@@ -273,11 +290,13 @@ function loadState(username) {
         // Fallback for missing keys
         if (!state.unlockedCards) state.unlockedCards = [];
         if (!state.clicks) state.clicks = 0;
+        if (state.tokens === undefined) state.tokens = 0;
     } else {
         // Reset defaults
         state.currentUser = username;
         state.coins = 0;
         state.tickets = 1;
+        state.tokens = 0;
         state.clicks = 0;
         state.cpc = 1;
         state.cps = 0;
@@ -597,12 +616,14 @@ function initPayment() {
             return;
         }
 
+        const senderName = document.getElementById("sender-name").value.trim();
+
         // Trigger simulation
         verifOverlay.classList.remove("hidden");
-        simulateVerification();
+        simulateVerification(senderName);
     });
 
-    function simulateVerification() {
+    function simulateVerification(senderName) {
         // Catatan kejujuran: situs statis ini tidak punya server, sehingga tidak bisa
         // benar-benar mengecek mutasi bank/e-wallet. Status "VIP" di bawah aktif secara
         // LOKAL di perangkat ini sebagai preview instan begitu Anda mengonfirmasi sudah
@@ -611,7 +632,7 @@ function initPayment() {
         const steps = [
             { time: 0, title: "Menyiapkan permintaan...", desc: "Mencatat data pengajuan kas Anda di perangkat ini..." },
             { time: 800, title: "Mengecek kelengkapan...", desc: `Nominal kas: ${SITE_CONFIG.KAS_NOMINAL}` },
-            { time: 1600, title: "Menunggu tinjauan Admin...", desc: "Bukti Anda akan ditinjau lewat Google Form/Drive..." },
+            { time: 1600, title: "Menghubungkan ke Spreadsheet...", desc: "Mengirimkan data bukti pembayaran ke database Admin..." },
             { time: 2400, title: "Mengaktifkan preview VIP...", desc: "Status final tetap menunggu konfirmasi Admin." }
         ];
 
@@ -642,12 +663,35 @@ function initPayment() {
             // Success upgrade VIP
             state.isVip = true;
             state.tickets += 10;
+            state.tokens += 5; // Dapatkan 5 Token Premium untuk download
             
             // VIP Exclusive card auto-unlocked
             if (!state.unlockedCards.includes(6)) {
                 state.unlockedCards.push(6);
             }
             
+            // Kirim data transaksi ke Google Spreadsheet jika URL dikonfigurasi
+            if (SITE_CONFIG.SPREADSHEET_WEBAPP_URL && !SITE_CONFIG.SPREADSHEET_WEBAPP_URL.includes("GANTI_DENGAN")) {
+                const payload = {
+                    username: state.currentUser,
+                    senderName: senderName,
+                    nominal: SITE_CONFIG.KAS_NOMINAL,
+                    timestamp: new Date().toLocaleString("id-ID"),
+                    fileName: fileInput.files[0] ? fileInput.files[0].name : "tidak_ada_file"
+                };
+
+                fetch(SITE_CONFIG.SPREADSHEET_WEBAPP_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                }).catch(err => {
+                    console.error("Gagal mengirim data ke Google Sheet:", err);
+                });
+            }
+
             saveState();
             updateUI();
 
@@ -675,6 +719,7 @@ function initPayment() {
 // 8. SPECIAL GACHA SYSTEM MODULE
 function initGacha() {
     const btnCloseReward = document.getElementById("btn-close-reward");
+    const btnCloseRewardX = document.getElementById("btn-close-reward-x");
     
     btnCloseReward.addEventListener("click", () => {
         const modal = document.getElementById("gacha-reward-modal");
@@ -684,6 +729,14 @@ function initGacha() {
         // Redirect to gallery to show collection
         document.querySelector("[data-target='tab-gallery']").click();
     });
+
+    if (btnCloseRewardX) {
+        btnCloseRewardX.addEventListener("click", () => {
+            const modal = document.getElementById("gacha-reward-modal");
+            modal.classList.add("hidden");
+            document.getElementById("reward-flip-card").classList.add("flipped"); // Reset card flip
+        });
+    }
 
     // Tampilkan harga tiket & ringkasan peluang di tiap kotak
     Object.entries(GACHA_BOXES).forEach(([idx, box]) => {
@@ -870,12 +923,54 @@ function openCardDetail(cardId) {
     detailCardId.textContent = `#0${cardData.id}`;
     detailRarityRate.textContent = cardData.rate;
     
-    // Simulate Download Link
-    btnDownload.href = cardData.image;
-    btnDownload.download = `Lana_JKT48_${cardData.title.replace(/\s+/g, '_')}.png`;
+    // Set download cost display
+    const isPremium = cardData.rarity !== "COMMON";
+    const downloadCostEl = document.getElementById("detail-download-cost");
+    if (downloadCostEl) {
+        downloadCostEl.innerHTML = isPremium ? `<span class="text-highlight">1 💎 (Token Premium)</span>` : "Gratis";
+    }
+
+    // Set button text
+    const btnDownloadText = document.getElementById("btn-download-text");
+    if (btnDownloadText) {
+        btnDownloadText.textContent = isPremium ? "Unduh Kartu (Butuh 1 💎)" : "Unduh Kartu (Gratis)";
+    }
+
+    // Overwrite click event handler to verify and consume tokens for downloads
+    btnDownload.onclick = (e) => {
+        e.preventDefault();
+        const filename = `Lana_JKT48_${cardData.title.replace(/\s+/g, '_')}.png`;
+
+        if (!isPremium) {
+            // Free download
+            triggerDownload(cardData.image, filename);
+            showToast("Berhasil mengunduh foto Lana!", "success");
+        } else {
+            // Premium download checking
+            if (state.tokens >= 1) {
+                state.tokens -= 1;
+                updateUI();
+                saveState();
+                triggerDownload(cardData.image, filename);
+                showToast(`Berhasil mengunduh foto rare! Terpotong 1 Token. Sisa token: ${state.tokens} 💎`, "success");
+            } else {
+                showToast("Token tidak cukup! Silakan dukung kas bulanan untuk mendapatkan 5 Token Premium.", "error");
+            }
+        }
+    };
 
     // Show Detail Modal
     document.getElementById("card-detail-modal").classList.remove("hidden");
+}
+
+// Programmatic file download helper
+function triggerDownload(url, filename) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 // 10. REALTIME UI REFRESH MODULE
@@ -883,6 +978,7 @@ function updateUI() {
     // Header Stats
     document.getElementById("header-coins").textContent = formatNumber(state.coins);
     document.getElementById("header-tickets").textContent = state.tickets;
+    document.getElementById("header-tokens").textContent = state.tokens;
     
     // Clicker Stats
     document.getElementById("clicker-coins").textContent = formatNumber(state.coins);

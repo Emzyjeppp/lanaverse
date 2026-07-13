@@ -84,6 +84,10 @@
                         <span class="stat-icon">🎟️</span>
                         <span id="header-tickets" class="stat-value font-mono">0</span>
                     </div>
+                    <div class="stat-item" title="Token Download">
+                        <span class="stat-icon">💎</span>
+                        <span id="header-tokens" class="stat-value font-mono">0</span>
+                    </div>
                     <div class="user-profile-menu">
                         <span id="header-username" class="username-text">LanaFans</span>
                         <button id="btn-logout" class="btn-icon-only" title="Keluar">
@@ -544,6 +548,7 @@
     <!-- Gacha Reward Modal -->
     <div id="gacha-reward-modal" class="modal-overlay hidden">
         <div class="modal-content gacha-reward-content card">
+            <button id="btn-close-reward-x" class="btn-close-modal" aria-label="Tutup">&times;</button>
             <h2 class="gacha-title">SELAMAT! KOTAK BERHASIL DIBUKA</h2>
             <p class="gacha-subtitle">Anda mendapatkan kartu berikut:</p>
             
@@ -592,12 +597,16 @@
                             <span>Rarity Drop:</span>
                             <span id="detail-rarity-rate">60%</span>
                         </div>
+                        <div class="detail-stat-row">
+                            <span>Biaya Unduh:</span>
+                            <span id="detail-download-cost">Gratis</span>
+                        </div>
                     </div>
                     
-                    <a id="btn-download-card" href="#" download class="btn btn-primary btn-block text-center mt-6">
+                    <button id="btn-download-card" class="btn btn-primary btn-block text-center mt-6">
                         <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Unduh Kartu Foto (High-Res)
-                    </a>
+                        <span id="btn-download-text">Unduh Kartu Foto</span>
+                    </button>
                 </div>
             </div>
         </div>
