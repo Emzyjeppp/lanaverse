@@ -48,7 +48,7 @@ const PHOTO_CARDS = [
         title: "Cozy Casual Cafe",
         rarity: "COMMON",
         rate: "60%",
-        image: "assets/lana_casual.png",
+        image: "assets/lana_stage.png",
         description: "Momen santai Lana di akhir pekan saat berkunjung ke cafe favoritnya dengan gaya kasual yang manis."
     },
     {
@@ -56,7 +56,7 @@ const PHOTO_CARDS = [
         title: "Seifuku School Uniform",
         rarity: "COMMON",
         rate: "60%",
-        image: "assets/lana_seifuku.png",
+        image: "assets/lana_stage.png",
         description: "Keceriaan Lana saat mengenakan seragam sekolah JKT48 (seifuku) lengkap dengan dasi pita merah ikonik."
     },
     {
@@ -64,7 +64,7 @@ const PHOTO_CARDS = [
         title: "Batik Kebaya Traditional",
         rarity: "RARE",
         rate: "30%",
-        image: "assets/lana_traditional.png",
+        image: "assets/lana_stage.png",
         description: "Keanggunan luar biasa Lana dibalut kebaya batik modern dalam sesi pemotretan bertema budaya tradisional Indonesia."
     },
     {
@@ -72,7 +72,7 @@ const PHOTO_CARDS = [
         title: "Golden Princess Dress",
         rarity: "ULTRA RARE",
         rate: "10%",
-        image: "assets/lana_gold.png",
+        image: "assets/lana_stage.png",
         description: "Foto langka Lana mengenakan gaun konser berhias payet emas berkilau layaknya putri kerajaan di panggung megah."
     },
     {
