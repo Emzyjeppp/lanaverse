@@ -500,7 +500,7 @@ window.buyUpgrade = function(type) {
 
 function getUpgradeName(type) {
     switch (type) {
-        case "lightstick": return "Lana Lightstick";
+        case "lightstick": return "Lana Love Lightstick";
         case "camera": return "Lensa Kamera";
         case "banner": return "Spanduk Fansite";
         case "cheer": return "Sorakan Theater";
