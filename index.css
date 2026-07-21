@@ -1476,18 +1476,135 @@ body {
 }
 
 .reward-card .card-inner {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px hsl(var(--color-primary) / 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px hsl(var(--color-primary) / 0.4);
 }
 
-.reward-card .card-front {
-    background: linear-gradient(135deg, hsl(var(--color-bg-card)), hsl(var(--color-bg-surface)));
+/* Mystery Card Cover (Holo Trading Card Back) */
+.mystery-card-cover {
+    background: radial-gradient(circle at 50% 40%, #2b173e 0%, #130a1c 65%, #08030e 100%);
+    border: 2px solid hsl(var(--color-gold) / 0.85) !important;
+    box-shadow: inset 0 0 0 3px rgba(255, 42, 122, 0.35), 
+                inset 0 0 20px rgba(255, 215, 0, 0.25),
+                0 0 25px rgba(140, 82, 255, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 0.75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Metallic foil inner border line */
+.card-cover-frame {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    border: 1px dashed hsl(var(--color-gold) / 0.5);
+    border-radius: calc(var(--radius-large) - 4px);
+    pointer-events: none;
+}
+
+/* Card Cover Brand Header */
+.card-cover-brand {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    background: linear-gradient(135deg, #ffd700, #fff, #ffae00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    z-index: 2;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+/* Center Emblem Area */
+.card-cover-center {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    padding: 1rem;
-    border: 1.5px solid hsl(var(--color-primary) / 0.3);
+    z-index: 2;
+    margin: auto 0;
+}
+
+.cover-glow-orb {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle, hsl(var(--color-secondary) / 0.6) 0%, hsl(var(--color-primary) / 0.4) 50%, transparent 70%);
+    filter: blur(12px);
+    animation: orb-pulse 2.5s infinite ease-in-out alternate;
+    z-index: -1;
+}
+
+.float-icon {
+    font-size: 3.2rem;
+    filter: drop-shadow(0 4px 15px rgba(255, 215, 0, 0.6));
+    animation: gift-float 2s infinite ease-in-out alternate;
+}
+
+.cover-sparkles {
+    font-size: 0.85rem;
+    letter-spacing: 0.6em;
+    margin-top: 0.25rem;
+    animation: sparkle-twinkle 1.8s infinite ease-in-out alternate;
+}
+
+.gold-text {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: hsl(var(--color-gold));
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+    z-index: 2;
+    text-transform: uppercase;
+}
+
+/* Holographic sweep animation across mystery card cover */
+.mystery-card-cover::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        115deg,
+        transparent 35%,
+        rgba(255, 255, 255, 0.12) 45%,
+        rgba(255, 215, 0, 0.3) 50%,
+        rgba(255, 42, 122, 0.2) 55%,
+        transparent 65%
+    );
+    transform: rotate(0deg);
+    animation: holo-sweep 3.5s infinite linear;
+    pointer-events: none;
+}
+
+@keyframes orb-pulse {
+    0% { transform: scale(0.85); opacity: 0.5; }
+    100% { transform: scale(1.15); opacity: 0.9; }
+}
+
+@keyframes gift-float {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-8px) scale(1.05); }
+}
+
+@keyframes sparkle-twinkle {
+    0% { opacity: 0.4; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes holo-sweep {
+    0% { transform: translate(-30%, -30%); }
+    100% { transform: translate(30%, 30%); }
 }
 
 .reward-card .card-back {
