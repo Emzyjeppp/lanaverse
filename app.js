@@ -724,7 +724,7 @@ function initGacha() {
     btnCloseReward.addEventListener("click", () => {
         const modal = document.getElementById("gacha-reward-modal");
         modal.classList.add("hidden");
-        document.getElementById("reward-flip-card").classList.add("flipped"); // Reset card flip
+        document.getElementById("reward-flip-card").classList.remove("flipped"); // Reset card flip to Mystery Gift cover
         
         // Redirect to gallery to show collection
         document.querySelector("[data-target='tab-gallery']").click();
@@ -734,7 +734,7 @@ function initGacha() {
         btnCloseRewardX.addEventListener("click", () => {
             const modal = document.getElementById("gacha-reward-modal");
             modal.classList.add("hidden");
-            document.getElementById("reward-flip-card").classList.add("flipped"); // Reset card flip
+            document.getElementById("reward-flip-card").classList.remove("flipped"); // Reset card flip to Mystery Gift cover
         });
     }
 
@@ -826,14 +826,18 @@ function rollCardReward(boxConfig) {
     rewardTitle.textContent = selectedCard.title;
     rewardDesc.textContent = selectedCard.description;
 
+    // Reset flip card state before showing (starts at Mystery Gift cover)
+    const flipCard = document.getElementById("reward-flip-card");
+    flipCard.classList.remove("flipped");
+
     // Show reward modal
     const modal = document.getElementById("gacha-reward-modal");
     modal.classList.remove("hidden");
     
-    // Play flip card animation after modal visible
+    // Play 3D flip card animation after modal is visible to reveal photo card
     setTimeout(() => {
-        document.getElementById("reward-flip-card").classList.remove("flipped");
-    }, 300);
+        flipCard.classList.add("flipped");
+    }, 400);
 }
 
 // 9. GALLERY COLLECTION SYSTEM

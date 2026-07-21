@@ -1459,7 +1459,7 @@ body {
 .reward-card-container {
     width: 200px;
     aspect-ratio: 2 / 3;
-    perspective: 800px;
+    perspective: 1000px;
     margin-bottom: 1rem;
 }
 
@@ -1468,11 +1468,34 @@ body {
     height: 100%;
     position: relative;
     transform-style: preserve-3d;
-    transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .reward-card.flipped {
     transform: rotateY(180deg);
+}
+
+.reward-card .card-inner {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px hsl(var(--color-primary) / 0.3);
+}
+
+.reward-card .card-front {
+    background: linear-gradient(135deg, hsl(var(--color-bg-card)), hsl(var(--color-bg-surface)));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 1.5px solid hsl(var(--color-primary) / 0.3);
+}
+
+.reward-card .card-back {
+    background-color: hsl(var(--color-bg-card));
+    transform: rotateY(180deg);
+    display: block;
+    padding: 0;
+    border: 1.5px solid hsl(var(--color-text-primary) / 0.15);
 }
 
 /* Card Detail Modal */
