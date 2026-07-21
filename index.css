@@ -1277,6 +1277,8 @@ body {
 
 .card-front, .card-back {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     -webkit-backface-visibility: hidden; /* Safari */
@@ -1491,7 +1493,11 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 1.25rem 0.75rem;
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
 }
 
@@ -1608,6 +1614,11 @@ body {
 }
 
 .reward-card .card-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-color: hsl(var(--color-bg-card));
     transform: rotateY(180deg);
     display: block;
